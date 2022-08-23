@@ -31,16 +31,9 @@ echo "[√] Added user '$USERNAME' to system and sudo group"
 # Check whether the root account has a real password set
 encrypted_root_pw="$(grep root /etc/shadow | cut --delimiter=: --fields=2)"
 
-if [ "${encrypted_root_pw}" != "*" ]; then
-    # Transfer auto-generated root password to user if present
-    # and lock the root account to password-based access
-    echo "${USERNAME}:${encrypted_root_pw}" | chpasswd --encrypted
-    passwd --lock root
-else
-    # Delete invalid password for user if using keys so that a new password
-    # can be set without providing a previous value
-    passwd --delete "${USERNAME}"
-fi
+# Delete invalid password for user if using keys so that a new password
+# can be set without providing a previous value
+passwd --delete "${USERNAME}"
 
 # Expire the sudo user's password immediately to force a change
 chage --lastday 0 "${USERNAME}"
